@@ -45,8 +45,8 @@ class stepFormsHandler {
 		    //'qValidationMsg' => $qRow->qValidationMsg,
 		    'qContinuousSliderMax' => $qRow->qContinuousSliderMax,
 		    'qNonEligibleMsg' => $qRow->qNonEligibleMsg,
-		    'qUseJTypeSelector' => $qRow->qUseJTypeSelector,
-        'useEligibilityQ' => $useEligibilityQ,
+		    'qUseJTypeSelector' => $qRow->qUseJTypeSelector == 1,
+        'useEligibilityQ' => $useEligibilityQ == 1,
 		    'optionsDef' => $optionsDef
 	    );
     }
@@ -66,7 +66,7 @@ class stepFormsHandler {
 		  $eqoDef=array(
 			  'id'=>$eqoRow->displayOrder,
 			  'label'=>$eqoRow->label,
-//			  'isEligibleResponse'=>$eqoRow->isEligibleResponse, // this is implicit in jType 0 ,1 being S1 interrogator types and 2 being ineligible
+			  'isEligibleResponse'=>$eqoRow->isEligibleResponse == 1, // this field is used if not JTypeSelector, otherwise jType is used
 			  'jType' => $eqoRow->jType,
         'jTypeLabel' => $this->judgeTypes[$eqoRow->jType]['label']
 		  );
@@ -174,15 +174,12 @@ class stepFormsHandler {
           'pageTitle' => $pageRow->pageTitle,
           'pageInst' => $pageRow->pageInst,
           'pageButtonLabel' => $pageRow->pageButtonLabel,
-          'contingentPage' => $pageRow->contingentPage,
-          //'useFilter' => $pageRow->useFilter,
+          'contingentPage' => $pageRow->contingentPage == 1,
           'pageAccordionClosed' => $this->userAccordionStates->pageAccordions[$i]->state->status == 1,
           'contingentValue' => $pageRow->contingentValue,
           'contingentText' => $pageRow->contingentText,
-          'ignorePage' => $pageRow->ignorePage,
-          //'q0isFilter' => $pageRow->useFilter,
+          'ignorePage' => $pageRow->ignorePage == 1,
           'jType' => $pageRow->jType, // jType is mainly used if form does not have eligibilityQ (post forms especially, as jType is selected from pre-form which does have )
-          //'filterQuestion' => $this->getFormPageFilterQuestion($pNo),
           'questions' => $this->getFormPageQuestions($pNo)
         );
         array_push($pageDefList, $pageDef);
@@ -225,7 +222,7 @@ class stepFormsHandler {
       
       $recruitmentSection = array();
       $recruitmentSection['recruitmentSectionClosed'] = $this->userAccordionStates->topLevelStates->recruitmentSectionClosed == 1;
-      $recruitmentSection['useRecruitmentCode'] = $row->useRecruitmentCode;
+      $recruitmentSection['useRecruitmentCode'] = $row->useRecruitmentCode == 1;
       //$recruitmentSection['allowNullRecruitmentCode'] = $row->allowNullRecruitmentCode;
       $recruitmentSection['recruitmentCodeLabel'] = $row->recruitmentCodeLabel;
       $recruitmentSection['recruitmentCodeMessage'] = $row->recruitmentCodeMessage;
@@ -234,7 +231,7 @@ class stepFormsHandler {
       
       $introPage = array();
       $introPage['recruitmentSection'] = $recruitmentSection;
-      $introPage['useIntroPage'] = $row->useIntroPage;
+      $introPage['useIntroPage'] = $row->useIntroPage == 1;
       $introPage['introPageTitle'] = $row->introPageTitle;
       $introPage['introPageMessage'] = $row->introPageMessage;
       $introPage['introPageButtonLabel'] = $row->introPageButtonLabel;
@@ -246,7 +243,7 @@ class stepFormsHandler {
       $finalPage['finalMsg'] = $row->finalMsg;
       $finalPage['finalButtonLabel'] = $row->finalButtonLabel;
       $finalPage['finalPageAccordionClosed'] = $this->userAccordionStates->topLevelStates->finalPageAccordionClosed == 1;
-      $finalPage['useFinalPage'] = $row->useFinalPage;
+      $finalPage['useFinalPage'] = $row->useFinalPage == 1;
       $form['finalPage'] = $finalPage;
       
       
@@ -367,10 +364,10 @@ class stepFormsHandler {
     $cleanEligibilityOptions = sprintf("DELETE FROM fdStepFormsEligibilityQuestionsOptions WHERE exptId='%s' AND formType='%s'", $this->exptId, $this->formType);
     $this->igrtSqli->query($cleanEligibilityOptions);
     // make basic form with minimum pages, questions and options
-    $sqlMake = sprintf("INSERT INTO fdStepForms (exptId, formType, formTitle, formInst, finalMsg, finalButtonLabel, introAccordionClosed, finalAccordionClosed, "
+    $sqlMake = sprintf("INSERT INTO fdStepForms (exptId, formType, formTitle, formInst, finalMsg, finalButtonLabel, "
       . "useIntroPage, introPageTitle, introPageMessage, introPageButtonLabel, useEligibilityQ) "
-      . "VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')", 
-      $this->exptId, $this->formType, "insert title here", "insert instructions here", "insert final message here", "done", "0", "0",
+      . "VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+      $this->exptId, $this->formType, "insert title here", "insert instructions here", "insert final message here", "done",
       "0", "insert intro page title here", "insert intro page message here", "next", "0");
     $this->igrtSqli->query($sqlMake);
     // create a default initial page 
@@ -385,9 +382,9 @@ class stepFormsHandler {
   }
 
   function createDefaultPageQuestion() {
-	  $insertQuestion = sprintf("INSERT INTO fdStepFormsQuestions (exptId, formType, pNo, qNo, qType, qLabel, qAccordionClosed, qValidationMsg, qContingentValue, qContinuousSliderMax, qMandatory, qGridTarget, qGridInstruction, optionsAccordionClosed) 
-			VALUES ('%s', '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-		  $this->exptId, $this->formType, 0, 0, 3, 'question label', 1, 'this question must be answered', 0, 100, 0, 0, 'grid instruction', 1);
+	  $insertQuestion = sprintf("INSERT INTO fdStepFormsQuestions (exptId, formType, pNo, qNo, qType, qLabel, qValidationMsg,  qContinuousSliderMax, qMandatory, qGridTarget, qGridInstruction)
+			VALUES ('%s', '%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+		  $this->exptId, $this->formType, 0, 0, 6, 'question label', 'this question must be answered', 100, 0, 0, 'grid instruction');
 	  $this->igrtSqli->query($insertQuestion);
 	  $insertOption = sprintf("INSERT INTO fdStepFormsQuestionsOptions (exptId, formType, pNo, qNo, label, displayOrder) VALUES ('%s','%s','%s','%s','%s','%s')",
 		  $this->exptId, $this->formType, 0, 0, 'first option', 0);
@@ -395,10 +392,11 @@ class stepFormsHandler {
   }
 
   function createDefaultPage() {
-		$insertPage = sprintf("INSERT INTO fdStepFormsPages (exptId, formType, pNo, pageTitle, pageInst, pageButtonLabel, contingentPage, useFilter, pageAccordionClosed, contingentValue, contingentText, ignorePage, jType) 
-			VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-			$this->exptId, $this->formType, 0, 'page title', 'page instruction', 'button label', 0, 0, 1, 0, '', 0, 0);
+		$insertPage = sprintf("INSERT INTO fdStepFormsPages (exptId, formType, pNo, pageTitle, pageInst, pageButtonLabel, contingentPage, useFilter, contingentValue, contingentText, ignorePage, jType)
+			VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			$this->exptId, $this->formType, 0, 'page title', 'page instruction', 'button label', 0, 1, 0, '', 0, 0);
 		$this->igrtSqli->query($insertPage);
+    $this->createDefaultPageQuestion();
   }
 
   function createDefaultEligibilityQuestion() {
@@ -411,19 +409,19 @@ class stepFormsHandler {
   function createDefaultEligibilityQuestionOptions() {
     // eligibility questions require 2 options if being used as a jType selector.
     $makeOption = sprintf("INSERT INTO fdStepFormsEligibilityQuestionsOptions (exptId, formType, label, displayOrder, isEligibleResponse, jType)"
-      . "VALUES ('%s', '%s', '%s', '%s', '%s', '0')",
-      $this->exptId, $this->formType, 'first eligibility option', 1, 0);
+      . "VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+      $this->exptId, $this->formType, 'first eligibility option', 0, 0, 0);
     $this->igrtSqli->query($makeOption);
     $makeOption = sprintf("INSERT INTO fdStepFormsEligibilityQuestionsOptions (exptId, formType, label, displayOrder, isEligibleResponse, jType)"
-      . "VALUES ('%s', '%s', '%s', '%s', '%s', '0')",
-      $this->exptId, $this->formType, 'second eligibility option', 1, 1);
+      . "VALUES ('%s', '%s', '%s', '%s', '%s', '%s')",
+      $this->exptId, $this->formType, 'second eligibility option', 1, 1, 1);
     $this->igrtSqli->query($makeOption);
   }
  
   function createDefaultFilterQuestion($pNo) {
-    $insertSql = sprintf("INSERT INTO fdStepFormsPageFilterQuestions (exptId, formType, pNo, fqType, fqLabel, fqOptionsAccordionClosed, filterMapping) "
-      . "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s')",
-      $this->exptId, $this->formType, $pNo, 5, 'question instruction',  1, 0);
+    $insertSql = sprintf("INSERT INTO fdStepFormsPageFilterQuestions (exptId, formType, pNo, fqType, fqLabel, filterMapping) "
+      . "VALUES('%s', '%s', '%s', '%s', '%s', '%s')",
+      $this->exptId, $this->formType, $pNo, 5, 'question instruction', 0);
     $this->igrtSqli->query($insertSql);
   }
 

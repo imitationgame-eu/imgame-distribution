@@ -1,3 +1,6 @@
+.ui-mobile-viewport {
+    background: url(images/tiling_stripes.gif);
+}
 /* mh augmentation of jqm theme for buttons uses as accordions */
 .accordionHeader {
     background-color: #b6c5b7;
