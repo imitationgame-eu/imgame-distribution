@@ -99,7 +99,7 @@
         $mandatoryFilterDef->qValidationMsg= $pageVM['questionFilterMandatoryVM']['qValidationMsg'];
         $mandatoryFilterDef->qType= $pageVM['questionFilterMandatoryVM']['qType'];
         $mandatoryFilterDef->qTypeFilter= $pageVM['questionFilterMandatoryVM']['qTypeFilter'];
-        $mandatoryFilterDef->qIsFilter= $pageVM['questionFilterMandatoryVM']['qIsFilter'];
+        $mandatoryFilterDef->qIsFilter= $pageVM['questionFilterMandatoryVM']['qIsFilter'] ? 1 : 0;
         $mandatoryFilterDef->qLabel= $pageVM['questionFilterMandatoryVM']['qLabel'];
         
         $options = [];
@@ -126,6 +126,7 @@
           $question->qLabel = $questionVM['qLabel'];
           $question->qValidationMsg = $questionVM['qValidationMsg'];
           $question->qFilterValue = $questionVM['qFilterValue'];
+          $question->qIsFilter = 0; // only the mandatoryFilterQ can be set as filter
           
           $options = [];
           $option = new StdClass;

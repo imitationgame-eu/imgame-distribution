@@ -14,6 +14,8 @@ include_once $root_path.'/helpers/debug/class.debugLogger.php';
 include_once $root_path.'/helpers/parseJSON.php';
 
 
+
+
 class stepFormsConfigurator {
   private $formControlSelectOptions = array();
   private $formDef;
@@ -21,6 +23,8 @@ class stepFormsConfigurator {
   private $formType = -1;
   private $exptId;
   private $jType;
+  
+  //private $getOperation = false;   // used in error handling - i.e. if cannot read form from db catch error and load default with success flag false
   
   private $userId;
   
@@ -79,14 +83,11 @@ class stepFormsConfigurator {
   function getStepFormJSON() {
 	  $this->formType = $this->formType > -1 ? $this->formType : $this->stepFormsHandler->getFormType();
 	  $this->formName = $this->stepFormsHandler->getFormName();
-	  $this->formDef = $this->stepFormsHandler->getForm();
+	  $this->formDef = $this->stepFormsHandler->getForm(false);
 	  $this->stepFormsHandler->setJType($this->jType);
-    return $this->buildStepFormJSON();
+    return json_encode($this->formDef);
   }
   
-  function buildStepFormJSON() {
-		return json_encode($this->formDef);
-  }
 
 // </editor-fold>
 

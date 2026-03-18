@@ -359,7 +359,7 @@ var pageViewModel = function(parent, data) {
   }
   this.delP = function(pData, event) {
     var newArray = [];
-    var targetID = parseInt(_this.pNo()) + 1;
+    var targetID = parseInt(_this.pNo());
     for (var i=0;i<targetID; i++)
       newArray.push(_this.parent.pageVMs()[i]);
     for (var i=targetID + 1; i<_this.parent.pageVMs().length; i++)
