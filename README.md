@@ -8,7 +8,8 @@ Documentation on how to use the software is available at http://imitationgame.co
 ### Thanks and acknowledgements
 Thanks to all those people who have written, posted or blogged guides that I have used whilst preparing my systems. Big kudos.
 
-### Anyone wishing to install this software on a LAMP stack is welcome to contact martin.hall326 AT gmail.com for advice.
+### Guidance
+Anyone wishing to install this software on a LAMP stack is welcome to contact martin.hall326 AT gmail.com for advice.
 #### Deployment instructions
 ##### Summary
 - Configure a LAMP stack server
